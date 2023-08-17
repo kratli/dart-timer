@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Timer</title>
-  <style>
-    /* Add your styles here */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Extension</title>
+    <style>
+        button {
+            display: block;
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-  <button data-time="55">55 minutes</button>
-  <button data-time="115">115 minutes</button>
-  <button data-time="180">180 minutes</button>
-  <input type="number" id="customTime" max="999">
-  <button id="startCustom">Start timer</button>
-  <script src="popup.js"></script>
+
+<button data-time="55">55 minutes</button>
+<button data-time="115">115 minutes</button>
+<button data-time="180">180 minutes</button>
+
+<input type="number" id="customTimeInput" min="1" max="999" placeholder="Enter minutes">
+<button id="startCustomTimer">Start Timer</button>
+
+<script src="popup.js"></script>
+
 </body>
 </html>
