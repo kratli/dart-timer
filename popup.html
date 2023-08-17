@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Timer Extension</title>
+  <title>Timer</title>
   <style>
-    #timer-display {
-      font-size: 24px;
-      text-align: center;
-      padding: 10px;
-    }
+    /* Add your styles here */
   </style>
 </head>
 <body>
-  <div id="timer-options">
-    <button id="btn-55">55 minutes</button>
-    <button id="btn-115">115 minutes</button>
-    <button id="btn-180">180 minutes</button>
-    <input type="number" id="custom-minutes" placeholder="Custom minutes">
-    <button id="btn-start">Start Timer</button>
-  </div>
-  <div id="timer-display">00:00</div>
+  <button data-time="55">55 minutes</button>
+  <button data-time="115">115 minutes</button>
+  <button data-time="180">180 minutes</button>
+  <input type="number" id="customTime" max="999">
+  <button id="startCustom">Start timer</button>
   <script src="popup.js"></script>
 </body>
 </html>
