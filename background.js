@@ -3,7 +3,7 @@ let timers = {};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Message received:", message);
-
+    
     if (message.action === "startTimer") {
         const tabId = message.tabId;
         const time = Number(message.time) * 60; // Convert minutes to seconds
@@ -21,6 +21,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             timers[tabId].remainingTime -= 1;
 
             if (timers[tabId].remainingTime <= 0) {
+                chrome.tabs.sendMessage(tabId, { action: 'timerEnded' });
                 delete timers[tabId];
                 return;
             }
@@ -30,8 +31,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         tick();
 
-        console.log("Timer started for TabId:", tabId, "Timers:", timers);  // Added log
-
         sendResponse({ status: "Timer started" });
     } else if (message.action === "getTimer") {
         const tabId = sender.tab.id;
@@ -40,8 +39,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (timer) {
             timer.remainingTime = Math.round((timer.endTime - Date.now()) / 1000);
         }
-
-        console.log("Getting timer for TabId:", tabId, "Timer:", timer);  // Added log
 
         sendResponse({ timer: timer || null });
     }

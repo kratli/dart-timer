@@ -6,6 +6,7 @@ function displayTimer(time) {
 
     let timerDiv = document.getElementById("overlayTimer");
     console.log("timer div is: " + timerDiv);
+    
     if (!timerDiv) {
         console.log("we found no timer div, so we try to create one"); 
         timerDiv = document.createElement("div");
@@ -22,6 +23,7 @@ function displayTimer(time) {
 
         document.body.appendChild(timerDiv);
     }
+    
     console.log("timerDiv is now: " + timerDiv);
     timerDiv.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
 
@@ -46,3 +48,26 @@ checkAndUpdateTimer();
 
 // Set up an interval to keep checking and updating the timer every second
 setInterval(checkAndUpdateTimer, 1000);
+
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "timerEnded") {
+        displayModal();
+    }
+});
+
+function displayModal() {
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modal.style.color = "white";
+    modal.style.display = "flex";
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    modal.style.zIndex = "10000";
+    modal.textContent = "Nu är det roliga slut, lämna gärna tillbaka pilarna i baren";
+    document.body.appendChild(modal);
+}
