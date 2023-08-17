@@ -62,12 +62,13 @@ function displayModal() {
     modal.style.left = "0";
     modal.style.width = "100%";
     modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 1)";  // Updated opacity here
     modal.style.color = "white";
     modal.style.display = "flex";
     modal.style.justifyContent = "center";
     modal.style.alignItems = "center";
     modal.style.zIndex = "10000";
+    modal.style.fontSize = "48px";
     modal.textContent = "Nu är det roliga slut, lämna gärna tillbaka pilarna i baren";
     document.body.appendChild(modal);
 }
