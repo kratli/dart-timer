@@ -1,16 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Browser Timer Overlay",
+    "name": "Timer Overlay",
     "version": "1.0",
-    "description": "Overlay a countdown timer on your browser",
-    "permissions": ["activeTab"],
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icons/timer16.png",
-        "48": "icons/timer48.png",
-        "128": "icons/timer128.png"
-      }
+    "description": "Displays a countdown timer on the browser.",
+    "permissions": ["activeTab", "storage"],
+    "background": {
+      "service_worker": "background.js"
     },
     "content_scripts": [
       {
@@ -18,8 +13,18 @@
         "js": ["content.js"]
       }
     ],
-    "background": {
-        "service_worker": "background.js"
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+      }
+    },
+    "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
   }
   
