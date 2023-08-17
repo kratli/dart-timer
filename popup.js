@@ -1,23 +1,29 @@
-document.querySelectorAll("[data-time]").forEach((button) => {
-    button.addEventListener("click", function() {
-        const time = this.getAttribute("data-time");
-        chrome.runtime.sendMessage({ action: "startTimer", time: time }, (response) => {
-            if (response && response.status === "Timer started") {
-                window.close();  // Close the popup after starting the timer
-            }
+document.addEventListener("DOMContentLoaded", function() {
+
+    const buttons = document.querySelectorAll("button[data-time]");
+
+    buttons.forEach(button => {
+        button.addEventListener("click", function() {
+            const timeValue = button.getAttribute("data-time");
+            startTimer(timeValue);
         });
     });
-});
 
-document.getElementById("startCustomTimer").addEventListener("click", function() {
-    const customTime = document.getElementById("customTimeInput").value;
-    if (customTime && customTime > 0 && customTime <= 999) {
-        chrome.runtime.sendMessage({ action: "startTimer", time: customTime }, (response) => {
-            if (response && response.status === "Timer started") {
-                window.close();  // Close the popup after starting the timer
-            }
+    document.getElementById("startCustomTimer").addEventListener("click", function() {
+        const customTime = document.getElementById("customTimeInput").value;
+        if (customTime && Number(customTime) <= 999 && Number(customTime) > 0) {
+            startTimer(customTime);
+        }
+    });
+
+    function startTimer(time) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            const tabId = tabs[0].id;
+            chrome.runtime.sendMessage({
+                action: "startTimer",
+                time: time,
+                tabId: tabId
+            });
         });
-    } else {
-        alert("Please enter a valid time between 1 and 999 minutes.");
     }
 });

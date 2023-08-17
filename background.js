@@ -1,18 +1,24 @@
+let timers = {};
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "startTimer") {
-        const endTime = Date.now() + message.time * 60 * 1000;
-        
-        chrome.storage.local.set({ timerEnd: endTime }, () => {
-            // Notify all tabs that the timer has been updated
-            chrome.tabs.query({}, (tabs) => {
-                for (let tab of tabs) {
-                    chrome.tabs.sendMessage(tab.id, { action: 'timerUpdated' });
-                }
-            });
+        const tabId = message.tabId;
+        timers[tabId] = message.time;
 
-            sendResponse({ status: 'Timer started' });
+        chrome.tabs.sendMessage(tabId, {
+            action: "updateTimer",
+            time: message.time
         });
-        
-        return true;  // This ensures the sendResponse callback can be invoked later
+
+        sendResponse({ status: "Timer started" });
+    }
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (timers[tabId] && changeInfo.status === "complete") {
+        chrome.tabs.sendMessage(tabId, {
+            action: "updateTimer",
+            time: timers[tabId]
+        });
     }
 });

@@ -1,58 +1,46 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'timerUpdated') {
-        // This will reset the timer and fetch the updated end time from storage
-        displayUpdatedTimer();
-    }
-});
-
-function displayUpdatedTimer() {
-    // Stop any previous intervals if they exist
-    if (window.timerInterval) {
-        clearInterval(window.timerInterval);
-    }
-
-    chrome.storage.local.get('timerEnd', (data) => {
-        if (data.timerEnd) {
-            window.timerInterval = setInterval(() => {
-                const remainingMillis = data.timerEnd - Date.now();
-                if (remainingMillis <= 0) {
-                    clearInterval(window.timerInterval);
-                    displayTimer(0);
-                } else {
-                    // Update the displayed time
-                    displayTimer(Math.round(remainingMillis / 1000 / 60));
-                }
-            }, 1000);
-        }
-    });
-}
+// Function to display the timer on the page
+console.log("Content script loaded");
+let timerInterval;
+let timerOverlay;
 
 function displayTimer(minutes) {
-    // Logic to display the timer on the page
-
-    let timerElement = document.getElementById("timerOverlay");
-  
-    // If the timer element doesn't exist yet, create it
-    if (!timerElement) {
-        timerElement = document.createElement("div");
-        timerElement.id = "timerOverlay";
-        
-        // Style the timer overlay
-        timerElement.style.position = 'fixed';
-        timerElement.style.top = '10px';
-        timerElement.style.right = '10px';
-        timerElement.style.zIndex = '10000';
-        timerElement.style.padding = '5px 10px';
-        timerElement.style.backgroundColor = 'rgba(0,0,0,0.7)';
-        timerElement.style.color = 'white';
-        timerElement.style.borderRadius = '5px';
-        timerElement.style.fontSize = '14px';
-
-        document.body.appendChild(timerElement);
+    if (timerInterval) {
+        clearInterval(timerInterval);
     }
 
-    timerElement.textContent = minutes + " minutes remaining";
+    if (!timerOverlay) {
+        timerOverlay = document.createElement("div");
+        timerOverlay.style.position = "fixed";
+        timerOverlay.style.top = "10px";
+        timerOverlay.style.right = "10px";
+        timerOverlay.style.zIndex = "10000";
+        timerOverlay.style.fontSize = "24px";
+        timerOverlay.style.background = "rgba(0, 0, 0, 0.5)";
+        timerOverlay.style.padding = "10px";
+        timerOverlay.style.borderRadius = "5px";
+        timerOverlay.style.color = "white";
+        document.body.appendChild(timerOverlay);
+    }
+
+    let timeLeft = minutes * 60;
+
+    timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerOverlay.textContent = "Timer Done!";
+            return;
+        }
+
+        const displayMinutes = Math.floor(timeLeft / 60);
+        const displaySeconds = timeLeft % 60;
+
+        timerOverlay.textContent = `${displayMinutes}:${String(displaySeconds).padStart(2, '0')}`;
+        timeLeft--;
+    }, 1000);
 }
 
-// Initialize the timer on content script load
-displayUpdatedTimer();
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "updateTimer") {
+        displayTimer(message.time);
+    }
+});
