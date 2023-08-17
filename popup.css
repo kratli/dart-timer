@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    color: #333;
+    text-align: center;
+}
+
+button {
+    background-color: #4CAF50; /* Green background */
+    border: none;
+    color: white; /* White text */
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 16px;
+    transition-duration: 0.4s; /* Transition effects */
+}
+
+button:hover {
+    background-color: #234725; /* Darker green on hover */
+}
+
+ input[type="number"] {
+        padding: 10px 15px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%; /* You can adjust this as needed */
+        box-sizing: border-box; /* This ensures padding doesn't add to the width */
+        margin-bottom: 10px; /* Some space below the input */
+    }
+
+input[type="text"]:focus {
+    outline: none; /* Removes the browser's default focus outline */
+    border: 2px solid #333; /* Changes the border color on focus */
+    background-color: #e6e6e6; /* Slightly darker background on focus */
+}

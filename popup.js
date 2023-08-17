@@ -22,6 +22,21 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    document.getElementById("removeTimer").addEventListener("click", function() {
+        removeTimer();
+    });
+    
+    function removeTimer() {
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            const tabId = tabs[0].id;
+            chrome.runtime.sendMessage({
+                action: "removeTimer",
+                tabId: tabId
+            });
+        });
+    }
+    
+
     function startTimer(time, tabId) {
         chrome.runtime.sendMessage({ action: "removeModal" }); // Remove the modal
         chrome.runtime.sendMessage({

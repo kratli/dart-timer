@@ -16,7 +16,7 @@ function displayTimer(time) {
         timerDiv.style.backgroundColor = "#333";
         timerDiv.style.color = "#FFF";
         timerDiv.style.borderRadius = "5px";
-        timerDiv.style.fontSize = "16px";
+        timerDiv.style.fontSize = "55px";
 
         document.body.appendChild(timerDiv);
     }
@@ -54,6 +54,13 @@ function removeModal() {
     }
 }
 
+function removeTimer(){
+    const timerDiv = document.getElementById("overlayTimer");
+    if (timerDiv) {
+        timerDiv.remove();
+    }
+}
+
 function checkAndUpdateTimer() {
     chrome.runtime.sendMessage({ action: "getTimer" }, response => {
         if (response && response.timer) {
@@ -67,6 +74,9 @@ chrome.runtime.onMessage.addListener(function(message) {
         showModal();
     } else if (message.action === "removeModal") {
         removeModal();
+    } else if (message.action === "removeModalAndTimer") {
+        removeModal();
+        removeTimer();        
     }
 });
 

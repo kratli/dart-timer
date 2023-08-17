@@ -45,5 +45,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             const currentTabId = tabs[0].id;
             chrome.tabs.sendMessage(currentTabId, { action: "removeModal" });
         });
+    } else if (message.action === "removeTimer") {
+        const tabId = message.tabId;
+    
+        if (timers[tabId]) {
+            clearTimeout(timers[tabId].timeout);
+            delete timers[tabId];
+        }
+    
+        // Send a message to content.js to remove the modal
+        chrome.tabs.sendMessage(tabId, { action: "removeModalAndTimer" });
+    
+        sendResponse({ status: "Timer and modal removed" });
     }
 });
