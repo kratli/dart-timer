@@ -1,24 +1,48 @@
+console.log("background script loaded");
 let timers = {};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("Message received:", message);
+
     if (message.action === "startTimer") {
         const tabId = message.tabId;
-        timers[tabId] = message.time;
+        const time = Number(message.time) * 60; // Convert minutes to seconds
 
-        chrome.tabs.sendMessage(tabId, {
-            action: "updateTimer",
-            time: message.time
-        });
+        if (timers[tabId]) {
+            clearTimeout(timers[tabId].timeout);
+        }
+
+        timers[tabId] = {
+            remainingTime: time,
+            endTime: Date.now() + time * 1000
+        };
+
+        function tick() {
+            timers[tabId].remainingTime -= 1;
+
+            if (timers[tabId].remainingTime <= 0) {
+                delete timers[tabId];
+                return;
+            }
+
+            timers[tabId].timeout = setTimeout(tick, 1000);
+        }
+
+        tick();
+
+        console.log("Timer started for TabId:", tabId, "Timers:", timers);  // Added log
 
         sendResponse({ status: "Timer started" });
-    }
-});
+    } else if (message.action === "getTimer") {
+        const tabId = sender.tab.id;
+        const timer = timers[tabId];
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (timers[tabId] && changeInfo.status === "complete") {
-        chrome.tabs.sendMessage(tabId, {
-            action: "updateTimer",
-            time: timers[tabId]
-        });
+        if (timer) {
+            timer.remainingTime = Math.round((timer.endTime - Date.now()) / 1000);
+        }
+
+        console.log("Getting timer for TabId:", tabId, "Timer:", timer);  // Added log
+
+        sendResponse({ timer: timer || null });
     }
 });

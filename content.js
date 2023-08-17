@@ -1,46 +1,48 @@
-// Function to display the timer on the page
 console.log("Content script loaded");
-let timerInterval;
-let timerOverlay;
 
-function displayTimer(minutes) {
-    if (timerInterval) {
-        clearInterval(timerInterval);
+function displayTimer(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    let timerDiv = document.getElementById("overlayTimer");
+    console.log("timer div is: " + timerDiv);
+    if (!timerDiv) {
+        console.log("we found no timer div, so we try to create one"); 
+        timerDiv = document.createElement("div");
+        timerDiv.id = "overlayTimer";
+        timerDiv.style.position = "fixed";
+        timerDiv.style.top = "10px";
+        timerDiv.style.right = "10px";
+        timerDiv.style.zIndex = 9999;
+        timerDiv.style.padding = "5px 10px";
+        timerDiv.style.backgroundColor = "#333";
+        timerDiv.style.color = "#FFF";
+        timerDiv.style.borderRadius = "5px";
+        timerDiv.style.fontSize = "16px";
+
+        document.body.appendChild(timerDiv);
     }
+    console.log("timerDiv is now: " + timerDiv);
+    timerDiv.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
 
-    if (!timerOverlay) {
-        timerOverlay = document.createElement("div");
-        timerOverlay.style.position = "fixed";
-        timerOverlay.style.top = "10px";
-        timerOverlay.style.right = "10px";
-        timerOverlay.style.zIndex = "10000";
-        timerOverlay.style.fontSize = "24px";
-        timerOverlay.style.background = "rgba(0, 0, 0, 0.5)";
-        timerOverlay.style.padding = "10px";
-        timerOverlay.style.borderRadius = "5px";
-        timerOverlay.style.color = "white";
-        document.body.appendChild(timerOverlay);
+    if (time <= 0) {
+        timerDiv.remove();
     }
-
-    let timeLeft = minutes * 60;
-
-    timerInterval = setInterval(() => {
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            timerOverlay.textContent = "Timer Done!";
-            return;
-        }
-
-        const displayMinutes = Math.floor(timeLeft / 60);
-        const displaySeconds = timeLeft % 60;
-
-        timerOverlay.textContent = `${displayMinutes}:${String(displaySeconds).padStart(2, '0')}`;
-        timeLeft--;
-    }, 1000);
 }
 
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.action === "updateTimer") {
-        displayTimer(message.time);
-    }
-});
+function checkAndUpdateTimer() {
+    console.log("About to send getTimer message to background.");
+    chrome.runtime.sendMessage({ action: "getTimer" }, response => {
+        console.log("Received response from background:", response);
+        if (response && response.timer) {
+            console.log("Updated timer:", response.timer.remainingTime);
+            displayTimer(response.timer.remainingTime);
+        }
+    });
+}
+
+// Check timer on initial load
+checkAndUpdateTimer();
+
+// Set up an interval to keep checking and updating the timer every second
+setInterval(checkAndUpdateTimer, 1000);
