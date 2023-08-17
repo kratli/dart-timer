@@ -2,8 +2,7 @@ console.log("background script loaded");
 let timers = {};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Message received:", message);
-    
+    console.log("message: ", message);
     if (message.action === "startTimer") {
         const tabId = message.tabId;
         const time = Number(message.time) * 60; // Convert minutes to seconds
@@ -21,8 +20,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             timers[tabId].remainingTime -= 1;
 
             if (timers[tabId].remainingTime <= 0) {
-                chrome.tabs.sendMessage(tabId, { action: 'timerEnded' });
                 delete timers[tabId];
+                chrome.tabs.sendMessage(tabId, { action: "showModal" });
                 return;
             }
 
@@ -41,5 +40,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         sendResponse({ timer: timer || null });
+    } else if (message.action === "removeModal") {
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            const currentTabId = tabs[0].id;
+            chrome.tabs.sendMessage(currentTabId, { action: "removeModal" });
+        });
     }
 });
