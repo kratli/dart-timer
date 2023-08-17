@@ -9,14 +9,15 @@ function displayTimer(time) {
         timerDiv = document.createElement("div");
         timerDiv.id = "overlayTimer";
         timerDiv.style.position = "fixed";
-        timerDiv.style.top = "10px";
-        timerDiv.style.right = "10px";
         timerDiv.style.zIndex = "9999";
         timerDiv.style.padding = "5px 10px";
+        timerDiv.style.marginBottom = "60px";
         timerDiv.style.backgroundColor = "#333";
         timerDiv.style.color = "#FFF";
         timerDiv.style.borderRadius = "5px";
-        timerDiv.style.fontSize = "55px";
+        timerDiv.style.fontSize = "100px";
+        timerDiv.style.right = "10px";
+        timerDiv.style.bottom = "10px"; 
 
         document.body.appendChild(timerDiv);
     }
