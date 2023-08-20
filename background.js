@@ -35,6 +35,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         tick();
 
         sendResponse({ status: "Timer started" });
+    } else if (message.action === "getTabId") {
+        sendResponse({tabId: sender.tab.id});
     } else if (message.action === "getTimer") {
         const tabId = sender.tab.id;
         const timer = timers[tabId];

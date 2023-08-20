@@ -11,13 +11,13 @@ function displayTimer(time) {
         timerDiv.style.position = "fixed";
         timerDiv.style.zIndex = "9999";
         timerDiv.style.padding = "5px 10px";
-        timerDiv.style.marginBottom = "60px";
+        timerDiv.style.marginTop = "60px";
         timerDiv.style.backgroundColor = "#333";
         timerDiv.style.color = "#FFF";
         timerDiv.style.borderRadius = "5px";
         timerDiv.style.fontSize = "100px";
         timerDiv.style.right = "10px";
-        timerDiv.style.bottom = "10px";
+        timerDiv.style.top = "10px";
 
         document.body.appendChild(timerDiv);
     }
@@ -63,7 +63,10 @@ function removeTimer() {
 }
 
 function checkAndUpdateTimer() {
+    console.log("checking and updating timer");
     chrome.runtime.sendMessage({ action: "getTimer" }, response => {
+        console.log("response is");
+        console.log(response);
         if (response && response.timer) {
             displayTimer(response.timer.remainingTime);
         }
@@ -81,21 +84,12 @@ chrome.runtime.onMessage.addListener(function (message) {
     }
 });
 
-function toggleTimerMenu() {
-    const timerMenu = document.getElementById("timerMenu");
-    if (timerMenu.style.display === "none") {
-        timerMenu.style.display = "block";
-    } else {
-        timerMenu.style.display = "none";
-    }
-}
-
 function showTimerUI() {
     // Main Timer button
     const timerButton = document.createElement("button");
     timerButton.id = "mainTimerButton";
     timerButton.style.position = "fixed";
-    timerButton.style.zIndex = "9999";
+    timerButton.style.zIndex = "10001";
     timerButton.style.right = "10px";
     timerButton.style.bottom = "10px";
     timerButton.style.padding = "0"; // Remove padding to make the icon fit better
@@ -104,10 +98,10 @@ function showTimerUI() {
     timerButton.style.cursor = "pointer";
 
     const timerIcon = document.createElement("img");
-    timerIcon.src = chrome.runtime.getURL("icons/icon16.png");  // changed from chrome.extension.getURL
+    timerIcon.src = chrome.runtime.getURL("icons/icon48.png");  // changed from chrome.extension.getURL
     timerIcon.alt = "Timer";
-    timerIcon.style.width = "16px"; // Adjust if you want a different size
-    timerIcon.style.height = "16px";
+    timerIcon.style.width = "48px"; // Adjust if you want a different size
+    timerIcon.style.height = "48px";
 
     timerButton.appendChild(timerIcon);
 
@@ -115,7 +109,7 @@ function showTimerUI() {
     const timerMenu = document.createElement("div");
     timerMenu.id = "timerMenu";
     timerMenu.style.position = "fixed";
-    timerMenu.style.zIndex = "9998";
+    timerMenu.style.zIndex = "10001";
     timerMenu.style.right = "10px";
     timerMenu.style.bottom = "50px";
     timerMenu.style.backgroundColor = "#FFF";
@@ -146,24 +140,46 @@ function showTimerUI() {
         }
     }
 
+    // Helper function to remove the timeoutModal if it's present
+    function removeTimeoutModal() {
+        const modal = document.getElementById("timeoutModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+
     // Event listeners
     timerButton.addEventListener('click', toggleTimerMenu);
 
     document.querySelector('[data-time="55"]').addEventListener('click', function () {
+        removeTimeoutModal();
         startTimer(55);
     });
 
     document.querySelector('[data-time="115"]').addEventListener('click', function () {
+        removeTimeoutModal();
         startTimer(115);
     });
 
     document.getElementById('startCustomTimer').addEventListener('click', function () {
-        const minutes = document.getElementById('customTimeInput').value;
-        if (minutes) startTimer(parseInt(minutes));
+        removeTimeoutModal();
+        let minutesStr = document.getElementById('customTimeInput').value;
+        
+        // Replace comma with period for decimal notation
+        minutesStr = minutesStr.replace(',', '.');
+        
+        const minutes = parseFloat(minutesStr);
+    
+        if (!isNaN(minutes) && minutes > 0) {
+            removeTimeoutModal();
+            console.log('time chosen:' + minutes);
+            startTimer(minutes);
+        }
     });
 
     document.getElementById('removeTimer').addEventListener('click', function () {
         toggleTimerMenu(); // Hide the menu
+        removeTimeoutModal();
         removeTimer();     // Remove the timer
     });
 }
@@ -178,11 +194,25 @@ function toggleTimerMenu() {
     }
 }
 
+
+
 function startTimer(minutes) {
-    // Logic here to start the timer
-    toggleTimerMenu(); // Hide the menu once a timer is selected
+    toggleTimerMenu(); 
     displayTimer(minutes * 60);
+
+    // Get the active tab to extract its ID
+    chrome.runtime.sendMessage({action: "getTabId"}, function(response) {
+        if (response && response.tabId) {
+            // Send the message with the tabId
+            chrome.runtime.sendMessage({
+                action: "startTimer",
+                time: minutes,
+                tabId: response.tabId
+            });
+        }
+    });
 }
+
 
 
 showTimerUI();

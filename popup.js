@@ -22,8 +22,19 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.getElementById("removeTimer").addEventListener("click", function() {
-        removeTimer();
+    document.getElementById('removeTimer').addEventListener('click', function () {
+        toggleTimerMenu(); // Hide the menu
+        removeTimeoutModal();
+        removeTimer();     
+    
+        chrome.runtime.sendMessage({action: "getTabId"}, function(response) {
+            if (response && response.tabId) {
+                chrome.runtime.sendMessage({
+                    action: "removeTimer",
+                    tabId: response.tabId
+                });
+            }
+        });
     });
     
     function removeTimer() {
@@ -38,7 +49,10 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     function startTimer(time, tabId) {
-        chrome.runtime.sendMessage({ action: "removeModal" }); // Remove the modal
+        chrome.runtime.sendMessage({ 
+            action: "removeModal",
+            tabId: tabId
+        }); 
         chrome.runtime.sendMessage({
             action: "startTimer",
             time: time,
