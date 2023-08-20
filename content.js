@@ -46,6 +46,7 @@ function showModal() {
     modal.style.fontSize = "48px";
     modal.textContent = "Nu är det roliga slut, lämna gärna tillbaka pilarna i baren";
     document.body.appendChild(modal);
+    shouldPoll = false;
 }
 
 function removeModal() {
@@ -62,15 +63,19 @@ function removeTimer() {
     }
 }
 
+let shouldPoll = false;
+
 function checkAndUpdateTimer() {
-    console.log("checking and updating timer");
-    chrome.runtime.sendMessage({ action: "getTimer" }, response => {
-        console.log("response is");
-        console.log(response);
-        if (response && response.timer) {
-            displayTimer(response.timer.remainingTime);
-        }
-    });
+    if (shouldPoll){
+        console.log("checking and updating timer");
+        chrome.runtime.sendMessage({ action: "getTimer" }, response => {
+            console.log("response is");
+            console.log(response);
+            if (response && response.timer) {
+                displayTimer(response.timer.remainingTime);
+            }
+        });
+    }
 }
 
 chrome.runtime.onMessage.addListener(function (message) {
@@ -181,6 +186,7 @@ function showTimerUI() {
         toggleTimerMenu(); // Hide the menu
         removeTimeoutModal();
         removeTimer();     // Remove the timer
+        shouldPoll = false;
     });
 }
 
@@ -197,6 +203,7 @@ function toggleTimerMenu() {
 
 
 function startTimer(minutes) {
+    shouldPoll = true;
     toggleTimerMenu(); 
     displayTimer(minutes * 60);
 
