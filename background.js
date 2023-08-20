@@ -1,6 +1,10 @@
 console.log("background script loaded");
 let timers = {};
 
+chrome.action.onClicked.addListener((tab) => {
+    chrome.tabs.sendMessage(tab.id, { action: "toggleTimerUI" });
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("message: ", message);
     if (message.action === "startTimer") {
