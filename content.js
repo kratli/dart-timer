@@ -44,7 +44,7 @@ function showModal() {
   modal.style.justifyContent = "center";
   modal.style.alignItems = "center";
   modal.style.fontSize = "48px";
-  modal.textContent = "Nu är det roliga slut, lämna tillbaka pilarna i baren";
+  modal.textContent = "Nu är det roliga slut! Lämna tillbaka pilarna i baren.";
   document.body.appendChild(modal);
   shouldPoll = false;
 }
@@ -57,13 +57,14 @@ function removeModal() {
 }
 
 function removeTimer() {
+    console.log("removeTimer called");
   const timerDiv = document.getElementById("overlayTimer");
   if (timerDiv) {
     timerDiv.remove();
   }
 }
 
-let shouldPoll = false;
+let shouldPoll = true;
 
 function checkAndUpdateTimer() {
   if (shouldPoll) {
@@ -79,7 +80,7 @@ function checkAndUpdateTimer() {
 }
 
 chrome.runtime.onMessage.addListener(function (message) {
-  if (message.action === "showModal") {
+  if (message.action === "showModal" && shouldPoll) {
     showModal();
   } else if (message.action === "removeModal") {
     removeModal();
@@ -125,41 +126,50 @@ function showTimerUI() {
   timerMenu.style.display = "none"; // Ensure this is set to 'none'
 
   timerMenu.innerHTML = `
+  <input id="startCustomTimer" type="button" value="Start Timer" style="
+  background-color: #04AA6D;
+  border: none;
+  color: white;
+  padding: 12px 32px;
+  text-decoration: none;
+  cursor: pointer;
+">
     <input data-time="55" type="button" value="55 minutes" style="
     background-color: #04AA6D;
     border: none;
     color: white;
-    padding: 16px 32px;
+    padding: 12px 32px;
     text-decoration: none;
-    margin: 4px 2px;
     cursor: pointer;
 ">
 <input data-time="115" type="button" value="115 minutes" style="
 background-color: #04AA6D;
 border: none;
 color: white;
-padding: 16px 32px;
+padding: 12px 32px;
 text-decoration: none;
-margin: 4px 2px;
 cursor: pointer;
 ">
-        <input type="number" id="customTimeInput" min="1" max="999" placeholder="Enter minutes">
-        <input id="startCustomTimer" type="button" value="Start Timer" style="
-    background-color: #04AA6D;
-    border: none;
-    color: white;
-    padding: 16px 32px;
-    text-decoration: none;
-    margin: 4px 2px;
-    cursor: pointer;
-">
+        <input type="number" id="customTimeInput" min="1" max="999" placeholder="Enter minutes" style="
+        font-size: .83333em;
+        width: 200px!important;
+        height: 42px;
+        line-height: 1.65 !important;
+        float: left;
+        display: block;
+        padding: 0;
+        margin: 0;
+        padding-left: 20px;
+        border: 1px solid #eee;
+        line-height: 1.2;
+    ">
+   
 <input id="removeTimer" type="button" value="Remove Timer" style="
     background-color: #04AA6D;
     border: none;
     color: white;
-    padding: 16px 32px;
+    padding: 12px 32px;
     text-decoration: none;
-    margin: 4px 2px;
     cursor: pointer;
 ">
     `;
@@ -170,6 +180,7 @@ cursor: pointer;
 
   // Toggle timer menu function
   function toggleTimerMenu() {
+      console.log("toggleTimerMenu called");
     if (timerMenu.style.display === "none") {
       timerMenu.style.display = "block";
     } else {
@@ -179,6 +190,7 @@ cursor: pointer;
 
   // Helper function to remove the timeoutModal if it's present
   function removeTimeoutModal() {
+    console.log("removeTimeoutModal called");
     const modal = document.getElementById("timeoutModal");
     if (modal) {
       modal.remove();
@@ -221,6 +233,7 @@ cursor: pointer;
     });
 
   document.getElementById("removeTimer").addEventListener("click", function () {
+      console.log("removeTimer called")
     toggleTimerMenu(); // Hide the menu
     removeTimeoutModal();
     removeTimer(); // Remove the timer
