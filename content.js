@@ -30,6 +30,7 @@ function displayTimer(time) {
 }
 
 function showModal() {
+  // Create the modal div
   const modal = document.createElement("div");
   modal.id = "timeoutModal";
   modal.style.position = "fixed";
@@ -37,15 +38,42 @@ function showModal() {
   modal.style.left = "0";
   modal.style.width = "100%";
   modal.style.height = "100%";
-  modal.style.backgroundColor = "rgba(0, 0, 0, 1)";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 1)"; // Black background
   modal.style.zIndex = "10000";
   modal.style.color = "#FFF";
   modal.style.display = "flex";
+  modal.style.flexDirection = "column"; // Ensure text and image stack vertically
   modal.style.justifyContent = "center";
   modal.style.alignItems = "center";
   modal.style.fontSize = "48px";
-  modal.textContent = "Nu är det roliga slut! Lämna tillbaka pilarna i baren.";
+
+  // Create and set the text content
+  const textContainer = document.createElement("div");
+  // textContainer.style.marginTop = "0%"; // Adjust the margin-top to move the text down
+
+  // Create and set the text content
+  const text = document.createElement("div");
+  text.textContent = "Nu är det roliga slut! Lämna tillbaka pilarna i baren.";
+  text.style.marginTop = "10%";
+  // Append the text to the text container
+  textContainer.appendChild(text);
+
+  // Create the image element
+  const image = document.createElement("img");
+  image.src = chrome.runtime.getURL("icons/BirkaBowling_Negativ.png");
+  image.style.width = "40%"; // Set image width to 30% of the screen width
+  image.style.height = "40%"; // Set image height to 30% of the screen height
+  image.style.objectFit = "contain"; // Ensure the image fits within its container
+  image.style.marginTop = "9%";
+  // image.style.backgroundColor = "black"; // Set the background-color to black
+
+  // Append both text and image to the modal
+  modal.appendChild(image);
+  modal.appendChild(text);
+
+  // Append the modal to the body
   document.body.appendChild(modal);
+
   shouldPoll = false;
 }
 

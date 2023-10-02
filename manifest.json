@@ -33,7 +33,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "icons/icon48.png"
+        "icons/icon48.png",
+        "icons/BirkaBowling_Negativ.png"
       ],
       "matches": [
         "<all_urls>"
